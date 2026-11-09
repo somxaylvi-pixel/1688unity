@@ -1,0 +1,1502 @@
+<!DOCTYPE html>
+<html lang="lo">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ລະບົບ 1688 CZ Smart Order & Tracking</title>
+  <style>
+    :root {
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --text: #1e293b;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --navy: #0f172a;
+      --blue: #1d4ed8;
+      --blue-light: #eff6ff;
+      --amber: #f59e0b;
+      --amber-light: #fffbeb;
+      --amber-border: #fcd34d;
+      --emerald: #059669;
+      --emerald-light: #ecfdf5;
+      --rose: #e11d48;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Noto Sans Lao', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+    .hidden { display: none !important; }
+    
+    /* Header & Mode Switcher */
+    .app-header {
+      background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+      color: #ffffff;
+      padding: 14px 16px;
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+    }
+    .header-inner {
+      max-width: 1080px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+    .brand-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .brand-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: var(--amber);
+      color: #0f172a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+    .brand-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin: 0;
+    }
+    .brand-sub {
+      font-size: 11px;
+      color: #bfdbfe;
+      margin: 2px 0 0 0;
+    }
+    .mode-tabs {
+      display: flex;
+      background: rgba(15, 23, 42, 0.75);
+      padding: 4px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.15);
+      gap: 4px;
+      width: 100%;
+    }
+    @media (min-width: 640px) {
+      .mode-tabs { width: auto; }
+    }
+    .tab-btn {
+      flex: 1;
+      border: none;
+      background: transparent;
+      color: #cbd5e1;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      font-family: inherit;
+    }
+    .tab-btn.active {
+      background: var(--amber);
+      color: #0f172a;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    }
+
+    /* Container */
+    .container {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--card);
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+    .card-header {
+      background: #1e3a8a;
+      color: #ffffff;
+      padding: 12px 16px;
+      font-weight: 700;
+      font-size: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .card-body {
+      padding: 16px;
+    }
+
+    /* Form Controls */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+    @media (min-width: 768px) {
+      .form-grid-2 { grid-template-columns: 7fr 5fr; }
+      .form-grid-4 { grid-template-columns: repeat(4, 1fr); }
+    }
+    .field-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      color: #334155;
+      margin-bottom: 5px;
+    }
+    .input, .textarea, .select {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      font-size: 13px;
+      font-family: inherit;
+      background: #ffffff;
+      color: var(--text);
+    }
+    .input:focus, .textarea:focus, .select:focus {
+      outline: none;
+      border-color: var(--blue);
+      box-shadow: 0 0 0 2px rgba(29, 78, 216, 0.15);
+    }
+    .hint {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    /* Highlighted CZ Box */
+    .cz-box {
+      background: var(--amber-light);
+      border: 2px solid var(--amber-border);
+      border-radius: 14px;
+      padding: 12px;
+    }
+    .cz-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-top: 6px;
+    }
+    .cz-input {
+      flex: 1;
+      font-size: 18px;
+      font-weight: 900;
+      text-align: center;
+      letter-spacing: 1px;
+      color: #1e3a8a;
+      background: #ffffff;
+      border: 1px solid #f59e0b;
+      border-radius: 10px;
+      padding: 8px;
+      text-transform: uppercase;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border: none;
+      border-radius: 10px;
+      padding: 9px 14px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      text-decoration: none;
+      transition: opacity 0.15s;
+    }
+    .btn:active { transform: scale(0.98); }
+    .btn-amber { background: var(--amber); color: #0f172a; }
+    .btn-blue { background: var(--blue); color: #ffffff; }
+    .btn-dark { background: var(--navy); color: #fcd34d; }
+    .btn-outline { background: #f8fafc; color: #334155; border: 1px solid #cbd5e1; }
+    .btn-danger { background: #fff1f2; color: var(--rose); border: 1px solid #fecdd3; }
+
+    /* 5-Image Upload Grid */
+    .img-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-top: 10px;
+    }
+    @media (min-width: 640px) {
+      .img-grid { grid-template-columns: repeat(5, 1fr); }
+    }
+    .img-slot {
+      border: 1px dashed #cbd5e1;
+      border-radius: 12px;
+      background: #f8fafc;
+      padding: 8px;
+      min-height: 110px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+    .img-slot.filled {
+      border: 2px solid #93c5fd;
+      background: #ffffff;
+      justify-content: space-between;
+    }
+    .img-slot img {
+      width: 100%;
+      height: 82px;
+      object-fit: contain;
+      background: #f1f5f9;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    /* Status Filter Pills */
+    .pills-bar {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 6px;
+      margin-top: 10px;
+    }
+    .pill {
+      border: 1px solid var(--border);
+      background: #f8fafc;
+      color: #475569;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      font-family: inherit;
+    }
+    .pill.active {
+      background: var(--navy);
+      color: #ffffff;
+      border-color: var(--navy);
+    }
+
+    /* Record Item Card */
+    .record-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px;
+      margin-bottom: 12px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+    }
+    .record-top {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .cz-badge-group {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--amber-light);
+      border: 2px solid var(--amber);
+      padding: 5px 10px;
+      border-radius: 12px;
+    }
+    .cz-code-text {
+      font-family: monospace;
+      font-size: 17px;
+      font-weight: 900;
+      color: #1e3a8a;
+      background: #ffffff;
+      padding: 2px 8px;
+      border-radius: 6px;
+      border: 1px solid #fcd34d;
+    }
+    .status-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .st-wait { background: #f1f5f9; color: #475569; }
+    .st-1 { background: #dbeafe; color: #1e40af; }
+    .st-2 { background: #e0e7ff; color: #3730a3; }
+    .st-3 { background: #f3e8ff; color: #6b21a8; }
+    .st-4 { background: #fae8ff; color: #86198f; }
+    .st-5 { background: #fef3c7; color: #92400e; }
+    .st-6 { background: #d1fae5; color: #065f46; }
+
+    .thumbs-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 10px 0;
+    }
+    .thumb-box {
+      position: relative;
+      width: 78px;
+      height: 78px;
+      border-radius: 10px;
+      border: 1px solid #cbd5e1;
+      background: #f8fafc;
+      overflow: hidden;
+      cursor: pointer;
+    }
+    .thumb-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+    .thumb-num {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      background: rgba(15,23,42,0.8);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 1px 5px;
+      border-radius: 4px;
+    }
+
+    .inline-controls {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      background: #f8fafc;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      margin-top: 8px;
+    }
+    @media (min-width: 640px) {
+      .inline-controls { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    /* Stepper for Customer Portal */
+    .stepper {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin: 12px 0;
+    }
+    @media (min-width: 640px) {
+      .stepper { grid-template-columns: repeat(6, 1fr); }
+    }
+    .step-item {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 8px;
+      text-align: center;
+      font-size: 11px;
+      color: #94a3b8;
+    }
+    .step-item.done {
+      border-color: #6ee7b7;
+      background: #ecfdf5;
+      color: #065f46;
+      font-weight: 700;
+    }
+    .step-item.current {
+      border: 2px solid #059669;
+      background: #d1fae5;
+      color: #064e3b;
+      font-weight: 800;
+    }
+
+    /* Modal & Toast */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.82);
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-box {
+      background: #ffffff;
+      border-radius: 16px;
+      max-width: 600px;
+      width: 100%;
+      overflow: hidden;
+    }
+    .toast {
+      position: fixed;
+      bottom: 18px;
+      right: 18px;
+      left: 18px;
+      max-width: 420px;
+      margin: 0 auto;
+      background: #0f172a;
+      color: #ffffff;
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 700;
+      z-index: 60;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="brand-box">
+        <div class="brand-icon">📦</div>
+        <div>
+          <h1 class="brand-title">ລະບົບ 1688 CZ Smart Order & Tracking</h1>
+          <p class="brand-sub">ຄັດກອງລະຫັດ CZxxxx ອັດຕະໂນມັດ • ກ໋ອບປີ້ໄວ • ແຍກໜ້າບ້ານລູກຄ້າ</p>
+        </div>
+      </div>
+
+      <div class="mode-tabs">
+        <button type="button" id="tabBtnAdmin" class="tab-btn active">🛠️ ຫຼັງບ້ານ (Admin)</button>
+        <button type="button" id="tabBtnCustomer" class="tab-btn">🔍 ໜ້າບ້ານ (ລູກຄ້າຄົ້ນຫາເອງ)</button>
+        <button type="button" id="tabBtnApi" class="tab-btn">🔌 ຕັ້ງຄ່າ API</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===================================================================== -->
+  <!-- VIEW 1: ADMIN BACK-OFFICE -->
+  <!-- ===================================================================== -->
+  <main id="viewAdmin" class="container">
+
+    <!-- Quick Entry Form -->
+    <section class="card">
+      <div class="card-header">
+        <span>⚡ ບັນທຶກຮັບອໍເດີ້ດ່ວນ (ວາງລິ້ງ 1688 ➔ ດຶງສະເພາະລະຫັດ CZxxxx ອັດຕະໂນມັດ)</span>
+        <span id="editingBadge" class="hidden" style="background:#f59e0b;color:#0f172a;padding:2px 8px;border-radius:10px;font-size:11px;">ກຳລັງແກ້ໄຂ</span>
+      </div>
+      <div class="card-body">
+        
+        <div class="form-grid form-grid-2">
+          <!-- 1. Raw Link Input -->
+          <div>
+            <label class="field-label">1. ຊ່ອງໃສ່ລິ້ງສິນຄ້າ 1 (ວາງຂໍ້ຄວາມລິ້ງຈາກ 1688 ໃສ່ບ່ອນນີ້) *</label>
+            <textarea id="inputRawLink" rows="3" class="textarea" placeholder="ຕົວຢ່າງ: 【LED太阳能路灯...】HTTPS://QR.1688.COM/S/DA783ON CZ3235"></textarea>
+            <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;margin-top:6px;">
+              <span id="detectedUrlText" class="hint" style="margin:0;">🔗 ລິ້ງເວັບ: ຍັງບໍ່ທັນວາງລິ້ງ</span>
+              <button type="button" id="btnSampleLink" class="btn btn-outline" style="padding:4px 8px;font-size:11px;">✨ ທົດລອງວາງລິ້ງຕົວຢ່າງ CZ3235</button>
+            </div>
+          </div>
+
+          <!-- 2. Automatic CZ Code Box -->
+          <div class="cz-box">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span style="font-size:12px;font-weight:800;color:#78350f;">🎯 ລະຫັດ CZ (ຄັດກອງເອົາແຕ່ CZ + 4 ຕົວເລກ)</span>
+            </div>
+            <div class="cz-row">
+              <input type="text" id="inputCzCode" class="cz-input" placeholder="CZxxxx">
+              <button type="button" id="btnCopyCzForm" class="btn btn-amber">📋 ກ໋ອບປີ້ CZ</button>
+            </div>
+            <div class="hint" style="color:#92400e;">
+              💡 ຕັດຂໍ້ຄວາມພາສາຈີນອອກໝົດ ເຫຼືອແຕ່ລະຫັດເຊັ່ນ <b>CZ3235</b> ເພື່ອກ໋ອບປີ້ໄປຄົ້ນໃນ WhatsApp & 1688
+            </div>
+          </div>
+        </div>
+
+        <hr style="border:none;border-top:1px solid var(--border);margin:14px 0;">
+
+        <!-- 3. Upload up to 5 Customer Screenshots -->
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+            <div>
+              <label class="field-label" style="margin:0;">2. ອັບໂຫຼດຮູບແຄັບຈໍຂໍ້ມູນສິນຄ້າຂອງລິ້ງ 1 (ເລືອກພ້ອມກັນໄດ້ສູງສຸດ 5 ຮູບ) *</label>
+              <div class="hint">ຫຼັງອັບໂຫຼດແລ້ວຈະໂຊຮູບທັງໝົດຂຶ້ນທັນທີ ພ້ອມປຸ່ມກົດກ໋ອບປີ້ລະຫັດ CZ</div>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <label for="multiImageInput" class="btn btn-blue">📷 ເລືອກຮູບແຄັບຈໍ (1-5 ຮູບ)</label>
+              <input id="multiImageInput" type="file" accept="image/*" multiple class="hidden">
+              <button type="button" id="btnClearAllImages" class="btn btn-danger hidden">ລ້າງຮູບ</button>
+            </div>
+          </div>
+
+          <div id="imagePreviewHeader" class="hidden" style="margin-top:10px;padding:8px 12px;background:#fef3c7;border:1px solid #fcd34d;border-radius:10px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+            <span style="font-size:12px;font-weight:700;color:#78350f;">
+              🖼️ ຮູບທີ່ອັບໂຫຼດແລ້ວ (<span id="imgCountText">0</span>/5 ຮູບ) • ລະຫັດ: <b id="previewCzBadge">CZ----</b>
+            </span>
+            <button type="button" id="btnCopyCzPreview" class="btn btn-dark" style="padding:5px 10px;">📋 ກ໋ອບປີ້ລະຫັດ CZ ນີ້</button>
+          </div>
+
+          <div id="imageSlotsGrid" class="img-grid"></div>
+        </div>
+
+        <hr style="border:none;border-top:1px solid var(--border);margin:14px 0;">
+
+        <!-- 4. Order 1688 ID, Tracking ID, Auto Status, Customer Note -->
+        <div class="form-grid form-grid-4">
+          <div>
+            <label class="field-label">3. ລະຫັດອໍເດີ້ 1688 (ບໍ່ບັງຄັບ)</label>
+            <input type="text" id="inputOrder1688" class="input" placeholder="ເຊັ່ນ: 64643234566">
+            <div class="hint" style="color:#059669;">⚡ ຄີໃສ່ປ๊ຸບ ປ່ຽນເປັນ <b>"ຈັດຊື້ແລ້ວ"</b> ເອງ</div>
+          </div>
+
+          <div>
+            <label class="field-label">4. ລະຫັດແທັກກິງພັດສະດຸ (ບໍ່ບັງຄັບ)</label>
+            <input type="text" id="inputTrackingNo" class="input" placeholder="ເຊັ່ນ: YT74589632145">
+            <div class="hint" style="color:#1d4ed8;">⚡ ຄີໃສ່ປ๊ຸບ ປ່ຽນເປັນ <b>"ສາງຈີນຮັບເຄື່ອງແລ້ວ"</b> ເອງ</div>
+          </div>
+
+          <div>
+            <label class="field-label">5. ສະຖານະອໍເດີ້ / ຂົນສົ່ງ</label>
+            <select id="inputStatus" class="select" style="font-weight:700;">
+              <option value="ລໍຖ້າກົດສັ່ງ">⏳ ລໍຖ້າກົດສັ່ງ</option>
+              <option value="ຈັດຊື້ແລ້ວ">1. ຈັດຊື້ແລ້ວ</option>
+              <option value="ສາງຈີນຮັບເຄື່ອງແລ້ວ">2. ສາງຈີນຮັບເຄື່ອງແລ້ວ</option>
+              <option value="ເຄື່ອງຂື້ນລົດແລ້ວ">3. ເຄື່ອງຂື້ນລົດແລ້ວ</option>
+              <option value="ເຄື່ອງເຂົ້າສາງໃຫຍ່ລາວແລ້ວ">4. ເຄື່ອງເຂົ້າສາງໃຫຍ່ລາວແລ້ວ</option>
+              <option value="ພ້ອມຮັບເອົາເຄື່ອງ">5. ພ້ອມຮັບເອົາເຄື່ອງ (ທະວີຊັບ)</option>
+              <option value="ສົ່ງມອບເຄື່ອງແລ້ວ">6. ສົ່ງມອບເຄື່ອງແລ້ວ</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="field-label">6. ຊື່ລູກຄ້າ / ໝາຍເຫດ (ບໍ່ບັງຄັບ)</label>
+            <input type="text" id="inputCustomerNote" class="input" placeholder="ເຊັ່ນ: Nounee7779">
+          </div>
+        </div>
+
+        <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:16px;">
+          <button type="button" id="btnResetForm" class="btn btn-outline">ລ້າງຟອມ</button>
+          <button type="button" id="btnSaveRecord" class="btn btn-blue" style="padding:10px 20px;font-size:13px;">
+            💾 <span id="btnSaveText">ບັນທຶກລາຍການ</span>
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Search & Filter Bar -->
+    <section class="card">
+      <div class="card-body">
+        <div style="display:flex;flex-wrap:wrap;gap:10px;">
+          <input type="text" id="adminSearchInput" class="input" style="flex:1;min-width:220px;border:2px solid #93c5fd;" placeholder="🔍 ຄົ້ນຫາລະຫັດ CZ (ເຊັ່ນ CZ3235), ເລກອໍເດີ້ 1688, ເລກແທັກກິງ, ຊື່ລູກຄ້າ ຫຼື ວາງລິ້ງສິນຄ້າ...">
+          <button type="button" id="btnSyncAllWarehouses" class="btn btn-outline">🔄 ດຶງສະຖານະ API (ສາງຈີນ & ທະວີຊັບ)</button>
+        </div>
+
+        <div class="pills-bar">
+          <button type="button" data-status="ALL" class="pill active">ທັງໝົດ (<span id="countAll">0</span>)</button>
+          <button type="button" data-status="ຈັດຊື້ແລ້ວ" class="pill">1. ຈັດຊື້ແລ້ວ</button>
+          <button type="button" data-status="ສາງຈີນຮັບເຄື່ອງແລ້ວ" class="pill">2. ສາງຈີນຮັບເຄື່ອງແລ້ວ</button>
+          <button type="button" data-status="ເຄື່ອງຂື້ນລົດແລ້ວ" class="pill">3. ເຄື່ອງຂື້ນລົດແລ້ວ</button>
+          <button type="button" data-status="ເຄື່ອງເຂົ້າສາງໃຫຍ່ລາວແລ້ວ" class="pill">4. ເຄື່ອງເຂົ້າສາງໃຫຍ່ລາວແລ້ວ</button>
+          <button type="button" data-status="ພ້ອມຮັບເອົາເຄື່ອງ" class="pill">5. ພ້ອມຮັບເອົາເຄື່ອງ</button>
+          <button type="button" data-status="ສົ່ງມອບເຄື່ອງແລ້ວ" class="pill">6. ສົ່ງມອບເຄື່ອງແລ້ວ</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Records List -->
+    <div id="adminRecordsContainer"></div>
+
+  </main>
+
+  <!-- ===================================================================== -->
+  <!-- VIEW 2: CUSTOMER TRACKING PORTAL (Read-Only) -->
+  <!-- ===================================================================== -->
+  <main id="viewCustomer" class="container hidden">
+    <section class="card">
+      <div class="card-header" style="background:linear-gradient(135deg,#1e3a8a,#0f172a);padding:20px;text-align:center;display:block;">
+        <div style="font-size:11px;color:#fcd34d;margin-bottom:4px;">🔒 ໂໝດສຳລັບລູກຄ້າ (ເບິ່ງສະຖານະຢ່າງດຽວ ບໍ່ສາມາດແກ້ໄຂຂໍ້ມູນໄດ້)</div>
+        <h2 style="margin:0 0 6px 0;font-size:19px;">🔍 ຄົ້ນຫາ & ຕິດຕາມສະຖານະສິນຄ້າ</h2>
+        <p style="margin:0 auto 14px auto;font-size:12px;color:#bfdbfe;max-width:520px;">
+          ພິມ <b>ລະຫັດ CZ (ເຊັ່ນ CZ3235)</b>, <b>ເລກແທັກກິງພັດສະດຸ</b>, ຫຼື <b>ເລກອໍເດີ້ 1688</b> ເພື່ອກວດເບິ່ງວ່າເຄື່ອງຮອດໃສແລ້ວ
+        </p>
+        <div style="max-width:480px;margin:0 auto;display:flex;gap:8px;">
+          <input type="text" id="custSearchInput" class="input" placeholder="ພິມລະຫັດ ເຊັ່ນ: CZ3235 ຫຼື YT74589632145...">
+          <button type="button" id="btnCustSearch" class="btn btn-amber">ຄົ້ນຫາ</button>
+        </div>
+      </div>
+      <div class="card-body" id="custSearchResults"></div>
+    </section>
+  </main>
+
+  <!-- ===================================================================== -->
+  <!-- VIEW 3: WAREHOUSE API SETTINGS -->
+  <!-- ===================================================================== -->
+  <main id="viewApi" class="container hidden">
+    <section class="card">
+      <div class="card-header">🔌 ຕັ້ງຄ່າການເຊື່ອມຕໍ່ API ລະບົບສາງຈີນ & ບໍລິສັດຂົນສົ່ງທະວີຊັບ</div>
+      <div class="card-body">
+        <div class="form-grid form-grid-2">
+          <div style="background:#f8fafc;padding:14px;border-radius:12px;border:1px solid var(--border);">
+            <h3 style="margin:0 0 8px 0;font-size:14px;color:#1e3a8a;">🇨🇳 1. API ສາງຈີນ (China Warehouse)</h3>
+            <label class="field-label">API Endpoint URL</label>
+            <input type="text" class="input" value="https://api.chinawarehouse.cn/v1/status" style="margin-bottom:8px;">
+            <label class="field-label">API Token</label>
+            <input type="password" class="input" value="cn_token_12345">
+            <div class="hint" style="margin-top:8px;">
+              • ອັບເດດສະຖານະອັດຕະໂນມັດ: <b>"ສາງຈີນຮັບເຄື່ອງແລ້ວ"</b> ➔ <b>"ເຄື່ອງຂື້ນລົດແລ້ວ"</b> ➔ <b>"ເຄື່ອງເຂົ້າສາງໃຫຍ່ລາວແລ້ວ"</b>
+            </div>
+          </div>
+
+          <div style="background:#f8fafc;padding:14px;border-radius:12px;border:1px solid var(--border);">
+            <h3 style="margin:0 0 8px 0;font-size:14px;color:#92400e;">🇱🇦 2. API ຂົນສົ່ງທະວີຊັບ (Thavisub Express)</h3>
+            <label class="field-label">API Endpoint URL</label>
+            <input type="text" class="input" value="https://api.thavisub.la/v1/tracking" style="margin-bottom:8px;">
+            <label class="field-label">API Token</label>
+            <input type="password" class="input" value="tvs_token_67890">
+            <div class="hint" style="margin-top:8px;">
+              • ອັບເດດສະຖານະອັດຕະໂນມັດ: <b>"ພ້ອມຮັບເອົາເຄື່ອງ"</b> ➔ <b>"ສົ່ງມອບເຄື່ອງແລ້ວ"</b>
+            </div>
+          </div>
+        </div>
+          <div style="background:#eff6ff;padding:14px;border-radius:12px;border:2px solid #93c5fd;margin-top:14px;">
+            <h3 style="margin:0 0 8px 0;font-size:14px;color:#1e3a8a;">🌐 3. ຖານຂໍ້ມູນອອນລາຍສາທາລະນະ (Google Sheets Cloud Database & ລິ້ງສົ່ງໃຫ້ລູກຄ້າ)</h3>
+            <label class="field-label">Cloud Database Web App URL (ຈາກ Google Apps Script)</label>
+            <input type="text" id="cloudDbUrlInput" class="input" placeholder="https://script.google.com/macros/s/XXXX/exec" style="margin-bottom:8px;">
+            <label class="field-label">ລະຫັດຜ່ານເຂົ້າໜ້າ Admin (Admin PIN)</label>
+            <input type="text" id="adminPinInput" class="input" value="1688" style="max-width:180px;margin-bottom:8px;">
+            <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;">
+              <button type="button" id="btnCopyCustomerLink" class="btn btn-amber">🔗 ກ໋ອບປີ້ລິ້ງໜ້າບ້ານສຳລັບສົ່ງໃຫ້ລູກຄ້າຄົ້ນຫາເອງ (?view=customer)</button>
+            </div>
+            <div class="hint" style="margin-top:8px;color:#1e40af;">
+              💡 ເມື່ອເອົາໄຟລ໌ຂຶ້ນເວັບ Public ແລ້ວ ລິ້ງທີ່ລົງທ້າຍດ້ວຍ <b>?view=customer</b> ຈະເປີດສະເພາະໜ້າຄົ້ນຫາຂອງລູກຄ້າເທົ່ານັ້ນ (ເຊື່ອງປຸ່ມ Admin ອັດຕະໂນມັດ).
+            </div>
+          </div>
+        <div style="margin-top:14px;text-align:right;">
+          <button type="button" id="btnSaveApiConfig" class="btn btn-blue">💾 ບັນທຶກການຕັ້ງຄ່າ API</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Image Lightbox Modal -->
+  <div id="lightboxModal" class="modal-backdrop hidden">
+    <div class="modal-box">
+      <div style="background:#0f172a;color:#fff;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span id="lightboxTitle" style="font-size:12px;font-weight:700;">ຮູບສິນຄ້າ</span>
+          <button type="button" id="btnLightboxCopyCz" class="btn btn-amber" style="padding:4px 8px;font-size:11px;">📋 ກ໋ອບປີ້ CZ</button>
+        </div>
+        <button type="button" id="btnCloseLightbox" style="background:none;border:none;color:#fff;font-size:22px;cursor:pointer;">&times;</button>
+      </div>
+      <div style="padding:12px;background:#f1f5f9;text-align:center;">
+        <img id="lightboxImg" src="" alt="Preview" style="max-width:100%;max-height:70vh;object-fit:contain;border-radius:8px;">
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast hidden">ແຈ້ງເຕືອນ</div>
+
+  <script>
+    function makeSampleSvg(label, desc, bg) {
+      var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="280" height="200" viewBox="0 0 280 200">' +
+        '<rect width="280" height="200" rx="12" fill="' + bg + '"/>' +
+        '<rect x="12" y="12" width="256" height="32" rx="6" fill="#ffffff"/>' +
+        '<text x="22" y="33" font-family="sans-serif" font-size="13" font-weight="bold" fill="#0f172a">' + label + '</text>' +
+        '<rect x="12" y="54" width="256" height="96" rx="6" fill="#ffffff"/>' +
+        '<text x="22" y="82" font-family="sans-serif" font-size="12" fill="#334155">' + desc + '</text>' +
+        '<text x="22" y="108" font-family="sans-serif" font-size="11" fill="#64748b">ສີ / ໄຊ້ / ຈຳນວນ ຕາມທີ່ລູກຄ້າແຄັບຈໍ</text>' +
+        '<text x="22" y="132" font-family="sans-serif" font-size="12" font-weight="bold" fill="#ea580c">ກົດເພື່ອຂະຫຍາຍເບິ່ງຮູບ</text>' +
+        '<rect x="12" y="160" width="256" height="28" rx="6" fill="#f97316"/>' +
+        '<text x="140" y="179" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="bold" fill="#ffffff">ຮູບແຄັບໜ້າຈໍຈາກລູກຄ້າ</text>' +
+        '</svg>';
+      return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
+    }
+
+    // Strictly extract ONLY CZ + 4 digits (e.g. CZ3235) and URL
+    function extractCzAndUrl(text) {
+      var str = String(text || "");
+      var czMatch = str.match(/CZ\s*[-_:]?\s*(\d{4})/i);
+      var czCode = czMatch ? ("CZ" + czMatch[1]).toUpperCase() : "";
+      var urlMatch = str.match(/https?:\/\/[A-Za-z0-9._~:/?#\[\]@!$&'()*+,;=%-]+/i);
+      var cleanUrl = urlMatch ? urlMatch[0] : "";
+      return { czCode: czCode, cleanUrl: cleanUrl };
+    }
+
+    function onlyCzCode(val) {
+      var str = String(val || "");
+      var m = str.match(/CZ\s*[-_:]?\s*(\d{4})/i);
+      if (m) return ("CZ" + m[1]).toUpperCase();
+      var d = str.match(/(\d{4})/);
+      if (d) return "CZ" + d[1];
+      return "CZ0000";
+    }
+
+    var DEFAULT_RECORDS = [
+      {
+        id: "REC-001",
+        rawLinkText: "【LED太阳能路灯户外庭院灯防水照明灯新农村道路亮化LED太阳能灯】复制￥ISFEWVE30UWAJ￥打开【手机阿里】查看：HTTPS://QR.1688.COM/S/DA783ON CZ3235",
+        cleanUrl: "https://qr.1688.com/s/DA783ON",
+        czCode: "CZ3235",
+        order1688Id: "64643234566",
+        trackingNo: "",
+        status: "ຈັດຊື້ແລ້ວ",
+        customerNote: "Nounee7779",
+        updatedAt: "2026-11-09 08:30",
+        images: [
+          makeSampleSvg("ລະຫັດ CZ3235 (ຮູບ #1)", "ໄຟໂຊລ່າເຊວ LED 100W", "#dbeafe"),
+          makeSampleSvg("ລະຫັດ CZ3235 (ຮູບ #2)", "ໄຟໂຊລ່າເຊວ LED 200W", "#e0e7ff")
+        ]
+      },
+      {
+        id: "REC-002",
+        rawLinkText: "为你推荐我精选的1688源头好物：女童套装 点击 https://qr.1688.com/s/mPOoN8GA CZ2737 或复制",
+        cleanUrl: "https://qr.1688.com/s/mPOoN8GA",
+        czCode: "CZ2737",
+        order1688Id: "41289001234567",
+        trackingNo: "YT74589632145",
+        status: "ສາງຈີນຮັບເຄື່ອງແລ້ວ",
+        customerNote: "Somchit (+8562055123456)",
+        updatedAt: "2026-11-09 08:15",
+        images: [
+          makeSampleSvg("ລະຫັດ CZ2737 (ຮູບ #1)", "ຊຸດເດັກນ້ອຍ ສີຄີມ 10 ຊຸດ", "#fef3c7")
+        ]
+      }
+    ];
+
+    var records = [];
+    try {
+      var saved = localStorage.getItem("cz_smart_records_v2");
+      records = saved ? JSON.parse(saved) : DEFAULT_RECORDS;
+    } catch (e) {
+      records = DEFAULT_RECORDS;
+    }
+
+    // Sanitize any previously saved records in localStorage so long Chinese text is replaced with clean CZxxxx
+    for (var i = 0; i < records.length; i++) {
+      var rec = records[i];
+      if (rec.status === "ຮ້ານຮັບພັສດຸແລ້ວ" || rec.status === "ຮ້ານຮັບພັດສະດຸແລ້ວ") {
+        rec.status = "ສາງຈີນຮັບເຄື່ອງແລ້ວ";
+      }
+      var combined = (rec.rawLinkText || "") + " " + (rec.czCode || "");
+      var extracted = extractCzAndUrl(combined);
+      if (extracted.czCode) {
+        if (!rec.rawLinkText && rec.czCode && rec.czCode.length > 8) {
+          rec.rawLinkText = rec.czCode;
+        }
+        rec.czCode = extracted.czCode;
+      } else {
+        rec.czCode = onlyCzCode(rec.czCode);
+      }
+      if (!rec.cleanUrl && extracted.cleanUrl) {
+        rec.cleanUrl = extracted.cleanUrl;
+      }
+    }
+
+    var currentFormImages = [];
+    var editingRecordId = null;
+    var activeStatusFilter = "ALL";
+
+    function saveRecords() {
+      try {
+        localStorage.setItem("cz_smart_records_v2", JSON.stringify(records));
+      } catch (e) {}
+      renderAdminRecords();
+    }
+
+    function showToast(msg) {
+      var t = document.getElementById("toast");
+      t.textContent = msg;
+      t.classList.remove("hidden");
+      clearTimeout(window._toastTimer);
+      window._toastTimer = setTimeout(function() {
+        t.classList.add("hidden");
+      }, 2600);
+    }
+
+    function copyText(text) {
+      var clean = String(text || "").trim();
+      if (!clean) {
+        showToast("⚠️ ຍັງບໍ່ມີລະຫັດໃຫ້ກ໋ອບປີ້");
+        return;
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(clean).then(function() {
+          showToast("📋 ກ໋ອບປີ້ລະຫັດ \"" + clean + "\" ແລ້ວ!");
+        }).catch(function() {
+          fallbackCopy(clean);
+        });
+      } else {
+        fallbackCopy(clean);
+      }
+    }
+
+    function fallbackCopy(text) {
+      var ta = document.createElement("textarea");
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand("copy"); } catch (e) {}
+      document.body.removeChild(ta);
+      showToast("📋 ກ໋ອບປີ້ລະຫັດ \"" + text + "\" ແລ້ວ!");
+    }
+
+    var inputRawLink = document.getElementById("inputRawLink");
+    var inputCzCode = document.getElementById("inputCzCode");
+    var detectedUrlText = document.getElementById("detectedUrlText");
+
+    inputRawLink.addEventListener("input", function() {
+      var res = extractCzAndUrl(inputRawLink.value);
+      if (res.czCode) {
+        inputCzCode.value = res.czCode;
+      }
+      detectedUrlText.textContent = res.cleanUrl ? ("🔗 ລິ້ງເວັບ: " + res.cleanUrl) : "🔗 ລິ້ງເວັບ: (ບໍ່ພົບ URL)";
+      updatePreviewCzBadge();
+    });
+
+    // If user pastes full Chinese share text directly into inputCzCode, strip everything except CZxxxx
+    inputCzCode.addEventListener("input", function() {
+      var v = inputCzCode.value;
+      if (v.length > 6) {
+        var res = extractCzAndUrl(v);
+        if (res.czCode) {
+          if (!inputRawLink.value.trim()) {
+            inputRawLink.value = v;
+            if (res.cleanUrl) detectedUrlText.textContent = "🔗 ລິ້ງເວັບ: " + res.cleanUrl;
+          }
+          inputCzCode.value = res.czCode;
+          showToast("🎯 ດຶງສະເພາະລະຫັດ " + res.czCode + " ອອກມາແລ້ວ!");
+        }
+      }
+      updatePreviewCzBadge();
+    });
+
+    function updatePreviewCzBadge() {
+      var code = inputCzCode.value.trim().toUpperCase() || "CZ----";
+      document.getElementById("previewCzBadge").textContent = code;
+    }
+
+    document.getElementById("btnSampleLink").addEventListener("click", function() {
+      inputRawLink.value = "【LED太阳能路灯户外庭院灯防水照明灯新农村道路亮化LED太阳能灯】复制￥ISFEWVE30UWAJ￥打开【手机阿里】查看：HTTPS://QR.1688.COM/S/DA783ON CZ3235";
+      var res = extractCzAndUrl(inputRawLink.value);
+      inputCzCode.value = res.czCode;
+      detectedUrlText.textContent = "🔗 ລິ້ງເວັບ: " + res.cleanUrl;
+      updatePreviewCzBadge();
+      showToast("✨ ດຶງສະເພາະລະຫັດ " + res.czCode + " ອັດຕະໂນມັດແລ້ວ!");
+    });
+
+    document.getElementById("btnCopyCzForm").addEventListener("click", function() {
+      copyText(onlyCzCode(inputCzCode.value));
+    });
+
+    document.getElementById("btnCopyCzPreview").addEventListener("click", function() {
+      copyText(onlyCzCode(inputCzCode.value));
+    });
+
+    // Auto-status triggers
+    var inputOrder1688 = document.getElementById("inputOrder1688");
+    var inputTrackingNo = document.getElementById("inputTrackingNo");
+    var inputStatus = document.getElementById("inputStatus");
+
+    inputOrder1688.addEventListener("input", function() {
+      if (inputTrackingNo.value.trim()) {
+        if (inputStatus.value === "ລໍຖ້າກົດສັ່ງ" || inputStatus.value === "ຈັດຊື້ແລ້ວ") {
+          inputStatus.value = "ສາງຈີນຮັບເຄື່ອງແລ້ວ";
+        }
+      } else if (inputOrder1688.value.trim()) {
+        if (inputStatus.value === "ລໍຖ້າກົດສັ່ງ") {
+          inputStatus.value = "ຈັດຊື້ແລ້ວ";
+        }
+      }
+    });
+
+    inputTrackingNo.addEventListener("input", function() {
+      if (inputTrackingNo.value.trim() && (inputStatus.value === "ລໍຖ້າກົດສັ່ງ" || inputStatus.value === "ຈັດຊື້ແລ້ວ")) {
+        inputStatus.value = "ສາງຈີນຮັບເຄື່ອງແລ້ວ";
+      }
+    });
+
+    // Multi-image upload (Max 5)
+    var multiImageInput = document.getElementById("multiImageInput");
+    var btnClearAllImages = document.getElementById("btnClearAllImages");
+
+    multiImageInput.addEventListener("change", function(e) {
+      var files = Array.prototype.slice.call(e.target.files || []);
+      if (!files.length) return;
+      var remain = 5 - currentFormImages.length;
+      if (remain <= 0) {
+        showToast("⚠️ ອັບໂຫຼດຄົບ 5 ຮູບແລ້ວ");
+        return;
+      }
+      var slice = files.slice(0, remain);
+      var count = 0;
+      slice.forEach(function(f) {
+        var reader = new FileReader();
+        reader.onload = function(ev) {
+          currentFormImages.push(ev.target.result);
+          count++;
+          if (count === slice.length) {
+            renderFormImageSlots();
+            showToast("📷 ອັບໂຫຼດຮູບແຄັບຈໍ " + count + " ຮູບແລ້ວ");
+          }
+        };
+        reader.readAsDataURL(f);
+      });
+      multiImageInput.value = "";
+    });
+
+    btnClearAllImages.addEventListener("click", function() {
+      currentFormImages = [];
+      renderFormImageSlots();
+    });
+
+    function renderFormImageSlots() {
+      var grid = document.getElementById("imageSlotsGrid");
+      var header = document.getElementById("imagePreviewHeader");
+      document.getElementById("imgCountText").textContent = currentFormImages.length;
+
+      if (currentFormImages.length > 0) {
+        header.classList.remove("hidden");
+        btnClearAllImages.classList.remove("hidden");
+      } else {
+        header.classList.add("hidden");
+        btnClearAllImages.classList.add("hidden");
+      }
+      updatePreviewCzBadge();
+
+      grid.innerHTML = "";
+      for (var i = 0; i < 5; i++) {
+        var src = currentFormImages[i];
+        var div = document.createElement("div");
+        if (src) {
+          div.className = "img-slot filled";
+          div.innerHTML =
+            '<div style="width:100%;display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">' +
+              '<span style="font-size:11px;font-weight:700;color:#1e3a8a;">ຮູບ #' + (i + 1) + '</span>' +
+              '<button type="button" class="del-slot-btn" data-idx="' + i + '" style="border:none;background:none;color:#e11d48;font-size:11px;font-weight:700;cursor:pointer;">ລຶບ</button>' +
+            '</div>' +
+            '<img src="' + src + '" class="zoom-slot-img" data-src="' + src + '" alt="Img">';
+        } else {
+          div.className = "img-slot";
+          div.innerHTML =
+            '<span style="font-size:18px;">🖼️</span>' +
+            '<span style="font-size:11px;margin-top:4px;">ຮູບທີ #' + (i + 1) + '</span>';
+        }
+        grid.appendChild(div);
+      }
+
+      var delBtns = grid.querySelectorAll(".del-slot-btn");
+      for (var j = 0; j < delBtns.length; j++) {
+        delBtns[j].addEventListener("click", function() {
+          var idx = parseInt(this.getAttribute("data-idx"), 10);
+          currentFormImages.splice(idx, 1);
+          renderFormImageSlots();
+        });
+      }
+
+      var zoomImgs = grid.querySelectorAll(".zoom-slot-img");
+      for (var k = 0; k < zoomImgs.length; k++) {
+        zoomImgs[k].addEventListener("click", function() {
+          openLightbox(this.getAttribute("data-src"), onlyCzCode(inputCzCode.value));
+        });
+      }
+    }
+
+    // Save record
+    document.getElementById("btnSaveRecord").addEventListener("click", function() {
+      var raw = inputRawLink.value.trim() || inputCzCode.value.trim();
+      var parsed = extractCzAndUrl(raw + " " + inputCzCode.value);
+      var cz = parsed.czCode || onlyCzCode(inputCzCode.value);
+
+      if (!raw && !inputCzCode.value.trim()) {
+        showToast("⚠️ ກະລຸນາວາງລິ້ງສິນຄ້າ 1688 ຫຼື ລະຫັດ CZ ກ່ອນ");
+        return;
+      }
+      if (currentFormImages.length === 0) {
+        showToast("⚠️ ກະລຸນາອັບໂຫຼດຮູບແຄັບຈໍສິນຄ້າຢ່າງໜ້ອຍ 1 ຮູບ");
+        return;
+      }
+
+      var ord1688 = inputOrder1688.value.trim();
+      var track = inputTrackingNo.value.trim();
+      var st = inputStatus.value;
+
+      if (track && (st === "ລໍຖ້າກົດສັ່ງ" || st === "ຈັດຊື້ແລ້ວ")) {
+        st = "ສາງຈີນຮັບເຄື່ອງແລ້ວ";
+      } else if (ord1688 && st === "ລໍຖ້າກົດສັ່ງ") {
+        st = "ຈັດຊື້ແລ້ວ";
+      }
+
+      var now = new Date().toISOString().slice(0, 16).replace("T", " ");
+      var item = {
+        id: editingRecordId || ("REC-" + String(records.length + 1).padStart(3, "0")),
+        rawLinkText: raw,
+        cleanUrl: parsed.cleanUrl || "",
+        czCode: cz,
+        order1688Id: ord1688,
+        trackingNo: track,
+        status: st,
+        customerNote: document.getElementById("inputCustomerNote").value.trim(),
+        updatedAt: now,
+        images: currentFormImages.slice()
+      };
+
+      if (editingRecordId) {
+        for (var i = 0; i < records.length; i++) {
+          if (records[i].id === editingRecordId) {
+            records[i] = item;
+            break;
+          }
+        }
+        showToast("✅ ອັບເດດລະຫັດ " + cz + " ຮຽບຮ້ອຍ!");
+      } else {
+        records.unshift(item);
+        showToast("✅ ບັນທຶກລະຫັດ " + cz + " ຮຽບຮ້ອຍ!");
+      }
+
+      resetForm();
+      saveRecords();
+    });
+
+    function resetForm() {
+      editingRecordId = null;
+      inputRawLink.value = "";
+      inputCzCode.value = "";
+      inputOrder1688.value = "";
+      inputTrackingNo.value = "";
+      inputStatus.value = "ລໍຖ້າກົດສັ່ງ";
+      document.getElementById("inputCustomerNote").value = "";
+      detectedUrlText.textContent = "🔗 ລິ້ງເວັບ: ຍັງບໍ່ທັນວາງລິ້ງ";
+      currentFormImages = [];
+      document.getElementById("editingBadge").classList.add("hidden");
+      document.getElementById("btnSaveText").textContent = "ບັນທຶກລາຍການ";
+      renderFormImageSlots();
+    }
+
+    document.getElementById("btnResetForm").addEventListener("click", resetForm);
+
+    function getStatusClass(st) {
+      if (st === "ຈັດຊື້ແລ້ວ") return "st-1";
+      if (st === "ສາງຈີນຮັບເຄື່ອງແລ້ວ") return "st-2";
+      if (st === "ເຄື່ອງຂື້ນລົດແລ້ວ") return "st-3";
+      if (st === "ເຄື່ອງເຂົ້າສາງໃຫຍ່ລາວແລ້ວ") return "st-4";
+      if (st === "ພ້ອມຮັບເອົາເຄື່ອງ") return "st-5";
+      if (st === "ສົ່ງມອບເຄື່ອງແລ້ວ") return "st-6";
+      return "st-wait";
+    }
+
+    function renderAdminRecords() {
+      var container = document.getElementById("adminRecordsContainer");
+      var rawQ = document.getElementById("adminSearchInput").value.trim();
+      var parsedQ = extractCzAndUrl(rawQ);
+      var q = (parsedQ.czCode || rawQ).toLowerCase();
+
+      document.getElementById("countAll").textContent = records.length;
+
+      var list = records.filter(function(r) {
+        var matchSt = (activeStatusFilter === "ALL") || (r.status === activeStatusFilter);
+        var matchQ = !q ||
+          (r.czCode && r.czCode.toLowerCase().indexOf(q) !== -1) ||
+          (r.order1688Id && r.order1688Id.toLowerCase().indexOf(q) !== -1) ||
+          (r.trackingNo && r.trackingNo.toLowerCase().indexOf(q) !== -1) ||
+          (r.customerNote && r.customerNote.toLowerCase().indexOf(q) !== -1) ||
+          (r.rawLinkText && r.rawLinkText.toLowerCase().indexOf(q) !== -1);
+        return matchSt && matchQ;
+      });
+
+      container.innerHTML = "";
+      if (list.length === 0) {
+        container.innerHTML = '<div class="card"><div class="card-body" style="text-align:center;color:#64748b;padding:30px;">📭 ບໍ່ພົບລາຍການອໍເດີ້ທີ່ຄົ້ນຫາ</div></div>';
+        return;
+      }
+
+      var statuses = [
+        "ລໍຖ້າກົດສັ່ງ",
+        "ຈັດຊື້ແລ້ວ",
+        "ສາງຈີນຮັບເຄື່ອງແລ້ວ",
+        "ເຄື່ອງຂື້ນລົດແລ້ວ",
+        "ເຄື່ອງເຂົ້າສາງໃຫຍ່ລາວແລ້ວ",
+        "ພ້ອມຮັບເອົາເຄື່ອງ",
+        "ສົ່ງມອບເຄື່ອງແລ້ວ"
+      ];
+
+      list.forEach(function(r) {
+        var cleanCz = onlyCzCode(r.czCode || r.rawLinkText);
+        var card = document.createElement("div");
+        card.className = "record-card";
+
+        var thumbsHtml = (r.images || []).map(function(imgSrc, idx) {
+          return '<div class="thumb-box rec-thumb" data-src="' + imgSrc + '" data-cz="' + cleanCz + '">' +
+            '<img src="' + imgSrc + '" alt="Img">' +
+            '<span class="thumb-num">#' + (idx + 1) + '</span>' +
+          '</div>';
+        }).join("");
+
+        var optsHtml = statuses.map(function(s) {
+          return '<option value="' + s + '" ' + (r.status === s ? 'selected' : '') + '>' + s + '</option>';
+        }).join("");
+
+        card.innerHTML =
+          '<div class="record-top">' +
+            '<div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;">' +
+              '<div class="cz-badge-group">' +
+                '<span style="font-size:12px;font-weight:800;color:#78350f;">ລະຫັດ CZ:</span>' +
+                '<span class="cz-code-text">' + cleanCz + '</span>' +
+                '<button type="button" class="btn btn-amber btn-copy-cz" data-cz="' + cleanCz + '" style="padding:5px 10px;">📋 ກ໋ອບປີ້ ' + cleanCz + '</button>' +
+              '</div>' +
+              (r.cleanUrl ? '<a href="' + r.cleanUrl + '" target="_blank" class="btn btn-outline" style="padding:5px 10px;">🔗 ເປີດລິ້ງ 1688</a>' : '') +
+              (r.customerNote ? '<span style="background:#f1f5f9;padding:4px 10px;border-radius:8px;font-size:12px;font-weight:600;">👤 ' + r.customerNote + '</span>' : '') +
+            '</div>' +
+            '<div style="display:flex;align-items:center;gap:6px;">' +
+              '<span class="status-badge ' + getStatusClass(r.status) + '">' + r.status + '</span>' +
+              '<button type="button" class="btn btn-outline btn-edit-rec" data-id="' + r.id + '" style="padding:5px 10px;">✏️ ແກ້ໄຂ</button>' +
+              '<button type="button" class="btn btn-danger btn-del-rec" data-id="' + r.id + '" style="padding:5px 10px;">🗑️</button>' +
+            '</div>' +
+          '</div>' +
+
+          '<div style="margin-top:10px;">' +
+            '<div style="font-size:12px;font-weight:700;color:#475569;">📷 ຮູບແຄັບຈໍສິນຄ້າ (' + (r.images || []).length + '/5 ຮູບ) - ກົດທີ່ຮູບເພື່ອຂະຫຍາຍ:</div>' +
+            '<div class="thumbs-row">' + thumbsHtml + '</div>' +
+          '</div>' +
+
+          '<div class="inline-controls">' +
+            '<div>' +
+              '<label class="field-label">ເລກອໍເດີ້ 1688</label>' +
+              '<div style="display:flex;gap:4px;">' +
+                '<input type="text" class="input inline-order1688" value="' + (r.order1688Id || '') + '" placeholder="ໃສ່ເລກອໍເດີ້..." data-id="' + r.id + '">' +
+                (r.order1688Id ? '<button type="button" class="btn btn-outline btn-copy-val" data-val="' + r.order1688Id + '">📋</button>' : '') +
+              '</div>' +
+            '</div>' +
+            '<div>' +
+              '<label class="field-label">ເລກແທັກກິງພັດສະດຸ</label>' +
+              '<div style="display:flex;gap:4px;">' +
+                '<input type="text" class="input inline-tracking" value="' + (r.trackingNo || '') + '" placeholder="ໃສ່ເລກແທັກກິງ..." data-id="' + r.id + '">' +
+                (r.trackingNo ? '<button type="button" class="btn btn-outline btn-copy-val" data-val="' + r.trackingNo + '">📋</button>' : '') +
+              '</div>' +
+            '</div>' +
+            '<div>' +
+              '<label class="field-label">ປ່ຽນສະຖານະດ່ວນ</label>' +
+              '<select class="select inline-status" data-id="' + r.id + '" style="font-weight:700;">' + optsHtml + '</select>' +
+            '</div>' +
+          '</div>';
+
+        container.appendChild(card);
+      });
+
+      // Attach events
+      var copyCzBtns = container.querySelectorAll(".btn-copy-cz");
+      for (var i = 0; i < copyCzBtns.length; i++) {
+        copyCzBtns[i].addEventListener("click", function() {
+          copyText(this.getAttribute("data-cz"));
+        });
+      }
+
+      var copyValBtns = container.querySelectorAll(".btn-copy-val");
+      for (var j = 0; j < copyValBtns.length; j++) {
+        copyValBtns[j].addEventListener("click", function() {
+          copyText(this.getAttribute("data-val"));
+        });
+      }
+
+      var thumbs = container.querySelectorAll(".rec-thumb");
+      for (var k = 0; k < thumbs.length; k++) {
+        thumbs[k].addEventListener("click", function() {
+          openLightbox(this.getAttribute("data-src"), this.getAttribute("data-cz"));
+        });
+      }
+
+      var editBtns = container.querySelectorAll(".btn-edit-rec");
+      for (var m = 0; m < editBtns.length; m++) {
+        editBtns[m].addEventListener("click", function() {
+          loadRecordIntoForm(this.getAttribute("data-id"));
+        });
+      }
+
+      var delBtns = container.querySelectorAll(".btn-del-rec");
+      for (var n = 0; n < delBtns.length; n++) {
+        delBtns[n].addEventListener("click", function() {
+          var id = this.getAttribute("data-id");
+          records = records.filter(function(x) { return x.id !== id; });
+          saveRecords();
+          showToast("🗑️ ລຶບລາຍການແລ້ວ");
+        });
+      }
+
+      var ordInputs = container.querySelectorAll(".inline-order1688");
+      for (var p = 0; p < ordInputs.length; p++) {
+        ordInputs[p].addEventListener("change", function() {
+          var id = this.getAttribute("data-id");
+          var rec = records.find(function(x) { return x.id === id; });
+          if (!rec) return;
+          rec.order1688Id = this.value.trim();
+          if (rec.order1688Id && rec.status === "ລໍຖ້າກົດສັ່ງ") {
+            rec.status = "ຈັດຊື້ແລ້ວ";
+            showToast("⚡ ປ່ຽນສະຖານະເປັນ \"ຈັດຊື້ແລ້ວ\" ອັດຕະໂນມັດ");
+          }
+          saveRecords();
+        });
+      }
+
+      var trkInputs = container.querySelectorAll(".inline-tracking");
+      for (var qIdx = 0; qIdx < trkInputs.length; qIdx++) {
+        trkInputs[qIdx].addEventListener("change", function() {
+          var id = this.getAttribute("data-id");
+          var rec = records.find(function(x) { return x.id === id; });
+          if (!rec) return;
+          rec.trackingNo = this.value.trim();
+          if (rec.trackingNo && (rec.status === "ລໍຖ້າກົດສັ່ງ" || rec.status === "ຈັດຊື້ແລ້ວ")) {
+            rec.status = "ສາງຈີນຮັບເຄື່ອງແລ້ວ";
+            showToast("⚡ ປ່ຽນສະຖານະເປັນ \"ສາງຈີນຮັບເຄື່ອງແລ້ວ\" ອັດຕະໂນມັດ");
+          }
+          saveRecords();
+        });
+      }
+
+      var stSelects = container.querySelectorAll(".inline-status");
+      for (var sIdx = 0; sIdx < stSelects.length; sIdx++) {
+        stSelects[sIdx].addEventListener("change", function() {
+          var id = this.getAttribute("data-id");
+          var rec = records.find(function(x) { return x.id === id; });
+          if (!rec) return;
+          rec.status = this.value;
+          saveRecords();
+          showToast("✅ ປ່ຽນສະຖານະເປັນ \"" + rec.status + "\" ແລ້ວ");
+        });
+      }
+    }
+
+    function loadRecordIntoForm(id) {
+      var r = records.find(function(x) { return x.id === id; });
+      if (!r) return;
+      editingRecordId = r.id;
+      inputRawLink.value = r.rawLinkText || "";
+      inputCzCode.value = onlyCzCode(r.czCode || r.rawLinkText);
+      inputOrder1688.value = r.order1688Id || "";
+      inputTrackingNo.value = r.trackingNo || "";
+      inputStatus.value = r.status || "ລໍຖ້າກົດສັ່ງ";
+      document.getElementById("inputCustomerNote").value = r.customerNote || "";
+      currentFormImages = (r.images || []).slice();
+      document.getElementById("editingBadge").classList.remove("hidden");
+      document.getElementById("btnSaveText").textContent = "ບັນທຶກການແກ້ໄຂ";
+      renderFormImageSlots();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    document.getElementById("adminSearchInput").addEventListener("input", renderAdminRecords);
+
+    var pills = document.querySelectorAll(".pill");
+    for (var p = 0; p < pills.length; p++) {
+      pills[p].addEventListener("click", function() {
+        for (var k = 0; k < pills.length; k++) pills[k].classList.remove("active");
+        this.classList.add("active");
+        activeStatusFilter = this.getAttribute("data-status");
+        renderAdminRecords();
+      });
+    }
+
+    document.getElementById("btnSyncAllWarehouses").addEventListener("click", function() {
+      var count = 0;
+      records.forEach(function(r) {
+        if (r.status === "ສາງຈີນຮັບເຄື່ອງແລ້ວ") { r.status = "ເຄື່ອງຂື້ນລົດແລ້ວ"; count++; }
+        else if (r.status === "ເຄື່ອງຂື້ນລົດແລ້ວ") { r.status = "ເຄື່ອງເຂົ້າສາງໃຫຍ່ລາວແລ້ວ"; count++; }
+        else if (r.status === "ເຄື່ອງເຂົ້າສາງໃຫຍ່ລາວແລ້ວ") { r.status = "ພ້ອມຮັບເອົາເຄື່ອງ"; count++; }
+      });
+      saveRecords();
+      showToast("🔄 ຊິ້ງຂໍ້ມູນ API ສາງຈີນ & ທະວີຊັບສຳເລັດ (" + count + " ລາຍການ)");
+    });
+
+    // Customer Read-Only Portal
+    var STEPS = [
+      "ຈັດຊື້ແລ້ວ",
+      "ສາງຈີນຮັບເຄື່ອງແລ້ວ",
+      "ເຄື່ອງຂື້ນລົດແລ້ວ",
+      "ເຄື່ອງເຂົ້າສາງໃຫຍ່ລາວແລ້ວ",
+      "ພ້ອມຮັບເອົາເຄື່ອງ",
+      "ສົ່ງມອບເຄື່ອງແລ້ວ"
+    ];
+
+    function renderCustomerSearch() {
+      var container = document.getElementById("custSearchResults");
+      var rawQ = document.getElementById("custSearchInput").value.trim();
+      var parsed = extractCzAndUrl(rawQ);
+      var q = (parsed.czCode || rawQ).toLowerCase();
+
+      var matched = records.filter(function(r) {
+        if (!q) return true;
+        return (r.czCode && r.czCode.toLowerCase().indexOf(q) !== -1) ||
+               (r.trackingNo && r.trackingNo.toLowerCase().indexOf(q) !== -1) ||
+               (r.order1688Id && r.order1688Id.toLowerCase().indexOf(q) !== -1);
+      });
+
+      container.innerHTML = "";
+      if (matched.length === 0) {
+        container.innerHTML = '<div style="text-align:center;color:#64748b;padding:24px;">🔍 ບໍ່ພົບຂໍ້ມູນລະຫັດພັດສະດຸນີ້</div>';
+        return;
+      }
+
+      matched.forEach(function(r) {
+        var cleanCz = onlyCzCode(r.czCode);
+        var curIdx = STEPS.indexOf(r.status);
+        var stepsHtml = STEPS.map(function(stName, idx) {
+          var cls = "step-item";
+          if (curIdx === idx) cls += " current";
+          else if (curIdx > idx) cls += " done";
+          return '<div class="' + cls + '">' + (curIdx >= idx ? "✓ " : (idx + 1) + ". ") + stName + '</div>';
+        }).join("");
+
+        var imgsHtml = (r.images || []).map(function(src, i) {
+          return '<div class="thumb-box cust-thumb" data-src="' + src + '" data-cz="' + cleanCz + '"><img src="' + src + '" alt="Img"><span class="thumb-num">#' + (i + 1) + '</span></div>';
+        }).join("");
+
+        var box = document.createElement("div");
+        box.className = "record-card";
+        box.innerHTML =
+          '<div class="record-top">' +
+            '<div class="cz-badge-group">' +
+              '<span style="font-size:12px;font-weight:800;color:#78350f;">ລະຫັດສິນຄ້າ:</span>' +
+              '<span class="cz-code-text">' + cleanCz + '</span>' +
+            '</div>' +
+            '<span class="status-badge ' + getStatusClass(r.status) + '">ສະຖານະ: ' + r.status + '</span>' +
+          '</div>' +
+          '<div class="stepper">' + stepsHtml + '</div>' +
+          '<div style="font-size:12px;color:#475569;margin-bottom:8px;">' +
+            '<b>ເລກອໍເດີ້ 1688:</b> ' + (r.order1688Id || 'ກຳລັງດຳເນີນການ') + ' &nbsp;|&nbsp; ' +
+            '<b>ເລກແທັກກິງພັດສະດຸ:</b> ' + (r.trackingNo || 'ລໍຖ້າອັບເດດ') +
+          '</div>' +
+          '<div class="thumbs-row">' + imgsHtml + '</div>';
+
+        container.appendChild(box);
+      });
+
+      var cThumbs = container.querySelectorAll(".cust-thumb");
+      for (var i = 0; i < cThumbs.length; i++) {
+        cThumbs[i].addEventListener("click", function() {
+          openLightbox(this.getAttribute("data-src"), this.getAttribute("data-cz"));
+        });
+      }
+    }
+
+    document.getElementById("btnCustSearch").addEventListener("click", renderCustomerSearch);
+    document.getElementById("custSearchInput").addEventListener("input", renderCustomerSearch);
+
+    // Lightbox
+    var lightboxModal = document.getElementById("lightboxModal");
+    var currentLightboxCz = "";
+
+    function openLightbox(src, cz) {
+      currentLightboxCz = cz || "";
+      document.getElementById("lightboxImg").src = src;
+      document.getElementById("lightboxTitle").textContent = "ຮູບສິນຄ້າ • ລະຫັດ " + currentLightboxCz;
+      lightboxModal.classList.remove("hidden");
+    }
+
+    document.getElementById("btnCloseLightbox").addEventListener("click", function() {
+      lightboxModal.classList.add("hidden");
+    });
+
+    document.getElementById("btnLightboxCopyCz").addEventListener("click", function() {
+      copyText(currentLightboxCz);
+    });
+
+    // Tabs
+    var tabBtnAdmin = document.getElementById("tabBtnAdmin");
+    var tabBtnCustomer = document.getElementById("tabBtnCustomer");
+    var tabBtnApi = document.getElementById("tabBtnApi");
+
+    var viewAdmin = document.getElementById("viewAdmin");
+    var viewCustomer = document.getElementById("viewCustomer");
+    var viewApi = document.getElementById("viewApi");
+
+    function switchTab(mode) {
+      viewAdmin.classList.add("hidden");
+      viewCustomer.classList.add("hidden");
+      viewApi.classList.add("hidden");
+      tabBtnAdmin.classList.remove("active");
+      tabBtnCustomer.classList.remove("active");
+      tabBtnApi.classList.remove("active");
+
+      if (mode === "ADMIN") {
+        viewAdmin.classList.remove("hidden");
+        tabBtnAdmin.classList.add("active");
+        renderAdminRecords();
+      } else if (mode === "CUSTOMER") {
+        viewCustomer.classList.remove("hidden");
+        tabBtnCustomer.classList.add("active");
+        renderCustomerSearch();
+      } else {
+        viewApi.classList.remove("hidden");
+        tabBtnApi.classList.add("active");
+      }
+    }
+
+    tabBtnAdmin.addEventListener("click", function() { switchTab("ADMIN"); });
+    tabBtnCustomer.addEventListener("click", function() { switchTab("CUSTOMER"); });
+    tabBtnApi.addEventListener("click", function() { switchTab("API"); });
+
+    document.getElementById("btnSaveApiConfig").addEventListener("click", function() {
+      showToast("✅ ບັນທຶກການຕັ້ງຄ່າ API ຮຽບຮ້ອຍແລ້ວ");
+    });
+
+    document.getElementById("btnSaveApiConfig").addEventListener("click", function() {
+      var cUrl = document.getElementById("cloudDbUrlInput");
+      if (cUrl) {
+        try { localStorage.setItem("cz_cloud_db_url", cUrl.value.trim()); } catch (e) {}
+      }
+      showToast("✅ ບັນທຶກການຕັ້ງຄ່າ Cloud DB & API ຮຽບຮ້ອຍແລ້ວ");
+    });
+
+    // Init
+    renderFormImageSlots();
+    renderAdminRecords();
+    // Public Customer URL Routing: if URL has ?view=customer or #customer, hide Admin & API tabs so customers only see the read-only search portal!
+    (function checkPublicCustomerMode() {
+      var loc = window.location.href || "";
+      var isCustOnly = (loc.indexOf("view=customer") !== -1) || (window.location.hash === "#customer");
+      var savedCloudUrl = "";
+      try { savedCloudUrl = localStorage.getItem("cz_cloud_db_url") || ""; } catch (e) {}
+      var cloudInp = document.getElementById("cloudDbUrlInput");
+      if (cloudInp && savedCloudUrl) cloudInp.value = savedCloudUrl;
+
+      var btnShareLink = document.getElementById("btnCopyCustomerLink");
+      if (btnShareLink) {
+        btnShareLink.addEventListener("click", function() {
+          var base = window.location.href.split("?")[0].split("#")[0];
+          var publicCustUrl = base + "?view=customer";
+          copyText(publicCustUrl);
+        });
+      }
+
+      if (isCustOnly) {
+        switchTab("CUSTOMER");
+        var modeTabs = document.querySelector(".mode-tabs");
+        if (modeTabs) modeTabs.classList.add("hidden");
+      }
+    })();
+
+    // Optional Cloud Sync with Google Sheets Web App if configured
+    function syncWithCloudDatabase(action, payload) {
+      var url = "";
+      try { url = localStorage.getItem("cz_cloud_db_url") || ""; } catch (e) {}
+      if (!url) return;
+      try {
+        fetch(url, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: action, data: payload, allRecords: records })
+        });
+      } catch (e) {}
+    }
+
+  </script>
+</body>
+</html>

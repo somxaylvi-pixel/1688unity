@@ -1,0 +1,58 @@
+/**
+ * ລະບົບ Cloud Backend ສຳລັບເວັບໄຊ 1688 CZ Smart Order & Tracking
+ * ວິທີໃຊ້:
+ * 1. ສ້າງໄຟລ໌ Google Sheets ໃໝ່ ➔ ກົດເມນູ Extensions (ສ່ວນຂະຫຍາຍ) ➔ Apps Script
+ * 2. ລຶບໂຄ້ດເກົ່າອອກ ແລ້ວວາງໂຄ້ດນີ້ໃສ່ທັງໝົດ ➔ ກົດ Save (ຮູບແผ່ນດິສ)
+ * 3. ກົດປຸ່ມ Deploy (ມຸມເທິງຂວາ) ➔ New deployment ➔ ເລືອກປະເພດ Web app
+ * 4. ຊ່ອງ Who has access ໃຫ້ເລືອກເປັນ "Anyone" (ທຸກຄົນ) ➔ ກົດ Deploy
+ * 5. ກ໋ອບປີ້ Web App URL ໄປວາງໃສ່ໃນແຖບ "🔌 ຕັ້ງຄ່າ API" ຂອງເວັບໄຊທ່ານ!
+ */
+
+function doGet(e) {
+  var sheet = getOrCreateSheet_();
+  var data = sheet.getDataRange().getValues();
+  var records = [];
+  for (var i = 1; i < data.length; i++) {
+    if (data[i][0]) {
+      try {
+        records.push(JSON.parse(data[i][5]));
+      } catch (err) {}
+    }
+  }
+  return ContentService.createTextOutput(JSON.stringify({ status: "ok", records: records }))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function doPost(e) {
+  var sheet = getOrCreateSheet_();
+  var body = JSON.parse(e.postData.contents);
+  var allRecords = body.allRecords || [];
+  
+  sheet.clearContents();
+  sheet.appendRow(["ID", "CZ_Code", "Order_1688_ID", "Tracking_No", "Status", "Raw_JSON"]);
+  
+  for (var i = 0; i < allRecords.length; i++) {
+    var r = allRecords[i];
+    sheet.appendRow([
+      r.id || "",
+      r.czCode || "",
+      r.order1688Id || "",
+      r.trackingNo || "",
+      r.status || "",
+      JSON.stringify(r)
+    ]);
+  }
+  
+  return ContentService.createTextOutput(JSON.stringify({ status: "saved", count: allRecords.length }))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function getOrCreateSheet_() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName("CZ_Database");
+  if (!sheet) {
+    sheet = ss.insertSheet("CZ_Database");
+    sheet.appendRow(["ID", "CZ_Code", "Order_1688_ID", "Tracking_No", "Status", "Raw_JSON"]);
+  }
+  return sheet;
+}
